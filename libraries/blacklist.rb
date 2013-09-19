@@ -23,13 +23,18 @@ class Chef
     alias_method :old_save, :save
 
     def save
-      Chef::Log.info("Blacklisting node attributes")
       blacklist = self[:blacklist].to_hash
-      self.default_attrs = Blacklist.filter(self.default_attrs, blacklist)
-      self.normal_attrs = Blacklist.filter(self.normal_attrs, blacklist)
-      self.override_attrs = Blacklist.filter(self.override_attrs, blacklist)
-      self.automatic_attrs = Blacklist.filter(self.automatic_attrs, blacklist)
-      old_save
+      if blacklist == {}
+          Chef::Log.info("Nothing to Blacklist")
+          old_save
+      else
+          Chef::Log.info("Blacklisting node attributes")
+          self.default_attrs = Blacklist.filter(self.default_attrs, blacklist)
+          self.normal_attrs = Blacklist.filter(self.normal_attrs, blacklist)
+          self.override_attrs = Blacklist.filter(self.override_attrs, blacklist)
+          self.automatic_attrs = Blacklist.filter(self.automatic_attrs, blacklist)
+          old_save
+      end
     end
   end
 end
